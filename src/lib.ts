@@ -1,11 +1,14 @@
-export function renderBlock (elementId, html) {
+import { Notice } from './Notice'
+import { Action } from './Action'
+
+export function renderBlock(elementId, html) {
   const element = document.getElementById(elementId)
-  element.innerHtml = html
+  element.innerHTML = html
 }
 
-export function renderToast (message, action) {
+export function renderToast(message: Notice, action?: Action) {
   let messageText = ''
-  
+
   if (message != null) {
     messageText = `
       <div id="info-block" class="info-block ${message.type}">
@@ -14,7 +17,7 @@ export function renderToast (message, action) {
       </div>
     `
   }
-  
+
   renderBlock(
     'toast-block',
     messageText
@@ -22,7 +25,7 @@ export function renderToast (message, action) {
 
   const button = document.getElementById('toast-main-action')
   if (button != null) {
-    button.onclick = function() {
+    button.onclick = function () {
       if (action != null && action.handler != null) {
         action.handler()
       }
