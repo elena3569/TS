@@ -4,7 +4,7 @@
   "scripts": {
     "build": "rimraf public/scripts && tsc -p tsconfig-dev.json",
     "build:prod": "rimraf public/scripts && tsc",
-    "start": "http-server -p 3000",
+    "start": "http-server -p 3005",
     "lint": "eslint src --ext .js --ext .ts",
     "lint-fix": "eslint src --ext .js --ext .ts --fix"
   },
