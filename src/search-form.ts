@@ -46,7 +46,7 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
         <div class="row">
           <div>
             <label for="city">Город</label>
-            <input id="city" name="city type="text" disabled value="Санкт-Петербург" />
+            <input id="city"  type="text" disabled value="Санкт-Петербург" />
             <input type="hidden" disabled value="59.9386,30.3141" />
           </div>
           <!--<div class="providers">
@@ -57,15 +57,15 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
         <div class="row">
           <div>
             <label for="check-in-date">Дата заезда</label>
-            <input id="check-in-date" name="startDate" type="date" value="${startDate}" min="${parseDate(new Date(), '-')}" max="${maxStartDate}" name="checkin" />
+            <input id="check-in-date" type="date" value="${startDate}" min="${parseDate(new Date(), '-')}" max="${maxStartDate}" name="checkin" />
           </div>
           <div>
             <label for="check-out-date">Дата выезда</label>
-            <input id="check-out-date" name="endDate" type="date" value="${endDate}" min="${endDate}" max="${maxEndDate}" name="checkout" />
+            <input id="check-out-date" type="date" value="${endDate}" min="${endDate}" max="${maxEndDate}" name="checkout" />
           </div>
           <div>
             <label for="max-price">Макс. цена суток</label>
-            <input id="max-price" name="maxPrice" type="text" value="" name="price" class="max-price" />
+            <input id="max-price" type="text" value="" name="price" class="max-price" />
           </div>
           <div>
             <div><button id="search-button">Найти</button></div>
@@ -77,9 +77,13 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
   )
 
   const button = document.getElementById('search-button')
-  console.log(button);
+  
   
   if (button != null) {
-    button.onclick = collectSearchFormData
+    button.onclick = function(event) {
+      event.preventDefault()
+      collectSearchFormData()
+    
+    }
   }
 }

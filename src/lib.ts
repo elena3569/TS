@@ -29,13 +29,12 @@ export function search(data: SearchFormData) {
 }
 
 export function collectSearchFormData() {
-
-  const searchForm = document.forms['search']
+  // console.log(document.getElementById('check-in-date').value)
   const searchData: SearchFormData = {
-    city: searchForm.get('city'),
-    startDate: searchForm.get('startDate'),
-    endDate: searchForm.get('endDate'),
-    maxPrice: searchForm.get('maxPrice'),
+    city: document.getElementById('city').value,
+    startDate: document.getElementById('check-in-date').value,
+    endDate: document.getElementById('check-out-date').value,
+    maxPrice: document.getElementById('max-price').value,
   }
   search(searchData)
 }
