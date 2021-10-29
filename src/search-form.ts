@@ -1,5 +1,6 @@
 import { renderBlock } from './lib.js'
 import { parseDate } from './parseDate.js'
+import { collectSearchFormData } from './lib.js';
 
 
 export function renderSearchFormBlock(startDate?: string, endDate?: string) {
@@ -33,7 +34,7 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
   }
 
   const date = startDate.split('-');
-  const minEndDate = parseDate(new Date(+date[0], +date[1], +date[2] + 1), '-');
+  const minEndDate = parseDate(new Date(+date[0], +date[1], +date[2] + 2), '-');
   const maxEndDate = parseDate(new Date(+date[0], +date[1] + 4, +date[2]), '-');
 
 
@@ -60,18 +61,25 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
           </div>
           <div>
             <label for="check-out-date">Дата выезда</label>
-            <input id="check-out-date" name="endDate" type="date" value="${endDate}" min="${minEndDate}" max="${maxEndDate}" name="checkout" />
+            <input id="check-out-date" name="endDate" type="date" value="${endDate}" min="${endDate}" max="${maxEndDate}" name="checkout" />
           </div>
           <div>
             <label for="max-price">Макс. цена суток</label>
             <input id="max-price" name="maxPrice" type="text" value="" name="price" class="max-price" />
           </div>
           <div>
-            <div><button type="submit">Найти</button></div>
+            <div><button id="search-button">Найти</button></div>
           </div>
         </div>
       </fieldset>
     </form>
     `
   )
+
+  const button = document.getElementById('search-button')
+  console.log(button);
+  
+  if (button != null) {
+    button.onclick = collectSearchFormData
+  }
 }

@@ -28,9 +28,7 @@ export function search(data: SearchFormData) {
   console.log(data);
 }
 
-export function collectSearchFormData(e) {
-  console.log(e);
-  e.preventDefault()
+export function collectSearchFormData() {
 
   const searchForm = document.forms['search']
   const searchData: SearchFormData = {
