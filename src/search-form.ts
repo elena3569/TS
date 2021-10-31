@@ -1,6 +1,7 @@
-import { renderBlock } from './lib.js'
+import { Place, renderBlock, renderToast, SearchFormData } from './lib.js'
 import { parseDate } from './parseDate.js'
-import { collectSearchFormData } from './lib.js';
+import { collectSearchFormData, search } from './lib.js';
+import { renderEmptyOrErrorSearchBlock, renderSearchResultsBlock } from './search-results.js';
 
 
 export function renderSearchFormBlock(startDate?: string, endDate?: string) {
@@ -80,9 +81,26 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
   
   
   if (button != null) {
-    button.onclick = function(event) {
+    button.onclick = async function(event) {
       event.preventDefault()
-      collectSearchFormData()
+      
+      const searchData: SearchFormData = collectSearchFormData()
+      if (searchData.city && searchData.startDate && searchData.endDate && searchData.maxPrice) {
+        const result = await search(searchData)
+        
+        if (result.length > 0) {
+          renderSearchResultsBlock(result)
+        } else {
+          renderEmptyOrErrorSearchBlock('Ничего не найдено')
+        }
+        
+      } else {
+        renderToast(
+          { text: 'Заполните все поля формы', type: 'success' },
+          { name: 'Понял', handler: () => { } }
+        )
+      }
+
     
     }
   }

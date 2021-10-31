@@ -1,3 +1,5 @@
+import { renderEmptyOrErrorSearchBlock } from "./search-results"
+
 interface Action {
   name: string
   handler: () => void
@@ -8,35 +10,59 @@ interface Notice {
   type: string
 }
 
-interface SearchFormData {
+export interface SearchFormData {
   city: string,
   startDate: string,
   endDate: string,
   maxPrice: number,
 }
 
-interface Place {
-  place: string
+export interface Place {
+    id: string,
+    name: string,
+    description: string,
+    image: string,
+    remoteness: number,
+    bookedDates: string[],
+    price: number
 }
+
 
 type User = {
   userName: string
   avatarUrl: string
 }
 
-export function search(data: SearchFormData) {
-  console.log(data);
+export async function search(data: SearchFormData): Place[] {
+  const url = 'http://localhost:3000/places'
+  const places: Place[] = []
+  await fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const keys:string[] = Object.keys(data)
+        keys.forEach(key => {
+          places.push(data[key])
+        })
+      })
+      .catch(err => {
+        console.log(err);
+        
+        // renderEmptyOrErrorSearchBlock('Произошла ошибка')
+      })
+  
+  const result = places.filter(place => place.price <= data.maxPrice)
+
+  return result;
 }
 
 export function collectSearchFormData() {
-  // console.log(document.getElementById('check-in-date').value)
   const searchData: SearchFormData = {
     city: document.getElementById('city').value,
     startDate: document.getElementById('check-in-date').value,
     endDate: document.getElementById('check-out-date').value,
     maxPrice: document.getElementById('max-price').value,
   }
-  search(searchData)
+  return searchData
 }
 
 
@@ -80,11 +106,10 @@ export function getUserData() {
   return user
 
 }
-export function getFavoritesAmount() {
-  const favoritesAmount: unknown = +localStorage.getItem('favoritesAmount')
+export function getFavoritesAmount(): number {
+  
+  const favoritesAmount = JSON.parse(localStorage.getItem('favoriteItems'))
 
-  if (typeof favoritesAmount == 'number') {
-    return favoritesAmount
-  }
-  return 0
+  return Object.keys(favoritesAmount).length
+  
 }
