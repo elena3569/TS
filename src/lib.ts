@@ -1,5 +1,70 @@
-import { Notice } from './Notice'
-import { Action } from './Action'
+import { renderEmptyOrErrorSearchBlock } from "./search-results"
+
+interface Action {
+  name: string
+  handler: () => void
+}
+
+interface Notice {
+  text: string
+  type: string
+}
+
+export interface SearchFormData {
+  city: string,
+  startDate: string,
+  endDate: string,
+  maxPrice: number,
+}
+
+export interface Place {
+    id: string,
+    name: string,
+    description: string,
+    image: string,
+    remoteness: number,
+    bookedDates: string[],
+    price: number
+}
+
+
+type User = {
+  userName: string
+  avatarUrl: string
+}
+
+export async function search(data: SearchFormData): Place[] {
+  const url = 'http://localhost:3000/places'
+  const places: Place[] = []
+  await fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const keys:string[] = Object.keys(data)
+        keys.forEach(key => {
+          places.push(data[key])
+        })
+      })
+      .catch(err => {
+        console.log(err);
+        
+        // renderEmptyOrErrorSearchBlock('Произошла ошибка')
+      })
+  
+  const result = places.filter(place => place.price <= data.maxPrice)
+
+  return result;
+}
+
+export function collectSearchFormData() {
+  const searchData: SearchFormData = {
+    city: document.getElementById('city').value,
+    startDate: document.getElementById('check-in-date').value,
+    endDate: document.getElementById('check-out-date').value,
+    maxPrice: document.getElementById('max-price').value,
+  }
+  return searchData
+}
+
 
 export function renderBlock(elementId, html) {
   const element = document.getElementById(elementId)
@@ -32,4 +97,19 @@ export function renderToast(message: Notice, action?: Action) {
       renderToast(null)
     }
   }
+}
+
+
+// Для обеих функций применить подход с unknown, чтобы валидировать содержимое localStorage. ????
+export function getUserData() {
+  const user: User = JSON.parse(localStorage.getItem('user'))
+  return user
+
+}
+export function getFavoritesAmount(): number {
+  
+  const favoritesAmount = JSON.parse(localStorage.getItem('favoriteItems'))
+
+  return Object.keys(favoritesAmount).length
+  
 }
