@@ -1,4 +1,5 @@
-import { renderEmptyOrErrorSearchBlock } from "./search-results"
+import { FlatRentSdk } from './flat-rent-sdk.js'
+import { Place } from 'flat-rent-sdk'
 
 interface Action {
   name: string
@@ -12,44 +13,44 @@ interface Notice {
 
 export interface SearchFormData {
   city: string,
-  startDate: string,
-  endDate: string,
-  maxPrice: number,
+  checkInDate: Date,
+  checkOutDate: Date,
+  priceLimit: number,
 }
-
-export interface Place {
-    id: string,
-    name: string,
-    description: string,
-    image: string,
-    remoteness: number,
-    bookedDates: string[],
-    price: number
-}
-
 
 type User = {
   userName: string
   avatarUrl: string
 }
 
-export async function search(data: SearchFormData): Place[] {
+export async function search(data: SearchFormData): Promise<Place[]> {
   const url = 'http://localhost:3000/places'
-  const places: Place[] = []
-  await fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const keys:string[] = Object.keys(data)
-        keys.forEach(key => {
-          places.push(data[key])
-        })
+  const form = new FormData(document.forms.search)
+  const optionDB = form.get('db')
+  const optionSDK = form.get('sdk')
+  
+  let places: Place[] = []
+  if (optionDB) {
+    await fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const keys:string[] = Object.keys(data)
+      keys.forEach(key => {
+        places.push(data[key])
       })
+      
+    })
       .catch(err => {
         console.log(err);
         
-        // renderEmptyOrErrorSearchBlock('Произошла ошибка')
       })
-  
+    }
+    
+    if (optionSDK) {
+      const sdk = new FlatRentSdk()      
+      places = [...places, ...sdk.database]
+    }
+
   const result = places.filter(place => place.price <= data.maxPrice)
 
   return result;
@@ -58,9 +59,9 @@ export async function search(data: SearchFormData): Place[] {
 export function collectSearchFormData() {
   const searchData: SearchFormData = {
     city: document.getElementById('city').value,
-    startDate: document.getElementById('check-in-date').value,
-    endDate: document.getElementById('check-out-date').value,
-    maxPrice: document.getElementById('max-price').value,
+    checkInDate: document.getElementById('check-in-date').value,
+    checkOutDate: document.getElementById('check-out-date').value,
+    priceLimit: document.getElementById('max-price').value,
   }
   return searchData
 }

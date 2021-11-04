@@ -1,4 +1,4 @@
-import { Place, renderBlock, renderToast, SearchFormData } from './lib.js'
+import { renderBlock, renderToast, SearchFormData } from './lib.js'
 import { parseDate } from './parseDate.js'
 import { collectSearchFormData, search } from './lib.js';
 import { renderEmptyOrErrorSearchBlock, renderSearchResultsBlock } from './search-results.js';
@@ -35,7 +35,6 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
   }
 
   const date = startDate.split('-');
-  const minEndDate = parseDate(new Date(+date[0], +date[1], +date[2] + 2), '-');
   const maxEndDate = parseDate(new Date(+date[0], +date[1] + 4, +date[2]), '-');
 
 
@@ -62,11 +61,21 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
           </div>
           <div>
             <label for="check-out-date">Дата выезда</label>
-            <input id="check-out-date" type="date" value="${endDate}" min="${endDate}" max="${maxEndDate}" name="checkout" />
+            <input id="check-out-date" type="date" value="${endDate}" min="${parseDate(new Date(((new Date()).getDate() + 2)), '-')}" max="${maxEndDate}" name="checkout" />
           </div>
           <div>
             <label for="max-price">Макс. цена суток</label>
             <input id="max-price" type="text" value="" name="price" class="max-price" />
+          </div>
+          <div>
+            <input type="checkbox" id="db" name="db"
+                  checked>
+            <label for="db">db-1</label>
+          </div>
+
+          <div>
+            <input type="checkbox" id="sdk" name="sdk">
+            <label for="sdk">SDK</label>
           </div>
           <div>
             <div><button id="search-button">Найти</button></div>

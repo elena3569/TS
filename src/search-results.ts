@@ -1,4 +1,5 @@
-import { getFavoritesAmount, getUserData, Place, renderBlock } from './lib.js'
+import { Place } from 'flat-rent-sdk'
+import { getFavoritesAmount, getUserData, renderBlock } from './lib.js'
 import { renderUserBlock } from './user.js'
 type favoriteItem = {
   id: String,
@@ -35,19 +36,23 @@ export function renderSearchResultsBlock (places: Place[]) {
   const favoriteItems: favoriteItem[] = JSON.parse(localStorage.getItem('favoriteItems'))
   
   places.forEach(place => {
+    // let photosHtml = ''
+    // place.photos.forEach(photo => {
+    //   photosHtml += `<img class="result-img" src="${photo}" alt="">`
+    // })
     resultList += `<li class="result">
     <div class="result-container">
       <div class="result-img-container">
         <div id=${place.id} class="favorites ${Boolean(favoriteItems.find(item => item.id == place.id)) ? 'active' : ''}"></div>
-        <img class="result-img" src="${place.image}" alt="">
+        <img class="result-img" src="${place.photos[0]}" alt="">
       </div>	
       <div class="result-info">
         <div class="result-info--header">
-          <p>${place.name}</p>
+          <p>${place.title}</p>
           <p class="price">${place.price}&#8381;</p>
         </div>
         <div class="result-info--map"><i class="map-icon"></i> ${place.remoteness} км от вас</div>
-        <div class="result-info--descr">${place.description}</div>
+        <div class="result-info--descr">${place.details}</div>
         <div class="result-info--footer">
           <div>
             <button>Забронировать</button>
@@ -84,7 +89,7 @@ export function renderSearchResultsBlock (places: Place[]) {
       const isFavorite = Boolean(favoriteItems.find(item => item.id == current.id))
       
       if (!isFavorite) {
-        favoriteItems.push({id: current.id, name: current.name, image: current.image})
+        favoriteItems.push({id: current.id, name: current.title, image: current.photos[0]})
       } else {
         favoriteItems.splice(favoriteItems.indexOf(favoriteItems.find(item => item.id == e.target.id)), 1)
       }
