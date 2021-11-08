@@ -6,7 +6,8 @@ const database = [
         photos: ['vnd331.png', 'vnd331.png'],
         coordinates: [59.9322936,30.3460129],
         bookedDates: [],
-        price: 12000
+        price: 12000,
+        remoteness: 1.2
     },
     {
         id: 'ab2e2',
@@ -15,7 +16,8 @@ const database = [
         photos: ['ab2e2.png', 'ab2e2.png'],
         coordinates: [59.930325,30.3291592],
         bookedDates: [],
-        price: 4500
+        price: 4500,
+        remoteness: 0.2
     },
     {
         id: 'mvm32l',
@@ -24,7 +26,8 @@ const database = [
         photos: ['mvm32l.png', 'mvm32l.png'],
         coordinates: [59.9299603,30.3658932],
         bookedDates: [],
-        price: 3800
+        price: 3800,
+        remoteness: 6.2
     },
     {
         id: 'bvep12',
@@ -33,6 +36,7 @@ const database = [
         photos: ['bvep12.png', 'bvep12.png'],
         coordinates: [59.9194966,30.309389],
         bookedDates: [],
+        remoteness: 2.3,
         price: 8700
     }
 ]
@@ -82,7 +86,7 @@ export class FlatRentSdk {
      * @param {number} [parameters.priceLimit] Max price for a night
      * @returns {Object[]} List of suitable flats.
      */
-    search(parameters) {
+    search(flats, parameters) {
         return new Promise((resolve, reject) => {
             try {
                 if (parameters.city != 'Санкт-Петербург') {
@@ -97,8 +101,6 @@ export class FlatRentSdk {
                 if (parameters.priceLimit != null && (isNaN(parameters.priceLimit) || !isFinite(parameters.priceLimit))) {
                     throw new Error(`Passed invalid price limit - "${parameters.priceLimit}".`)
                 }
-        
-                let flats = this.database
         
                 if (parameters.priceLimit != null) {
                     flats = flats.filter((flat) => {
@@ -231,7 +233,7 @@ export class FlatRentSdk {
 
         if (nightNumber != null) {
             formattedFlat.totalPrice = nightNumber * formattedFlat.price
-            delete formattedFlat.price
+            // delete formattedFlat.price
         }
 
         return formattedFlat

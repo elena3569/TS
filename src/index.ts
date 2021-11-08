@@ -3,7 +3,7 @@ import { renderSearchStubBlock } from './search-results.js'
 import { renderUserBlock } from './user.js'
 import { getUserData, collectSearchFormData, getFavoritesAmount, renderToast } from './lib.js'
 
-// window.localStorage.setItem('user', JSON.stringify({ userName: 'Kate', avatarUrl: '/img/avatar.png' }))
+window.localStorage.setItem('user', JSON.stringify({ userName: 'Kate', avatarUrl: '/img/avatar.png' }))
 
 
 window.addEventListener('DOMContentLoaded', () => {

@@ -1,11 +1,5 @@
 import { Place } from 'flat-rent-sdk'
-import { getFavoritesAmount, getUserData, renderBlock } from './lib.js'
-import { renderUserBlock } from './user.js'
-type favoriteItem = {
-  id: String,
-  name: String,
-  image: String,
-}
+import { FavoriteItem, renderBlock, sort, toggleFavoriteItem } from './lib.js'
 
 export function renderSearchStubBlock () {
   renderBlock(
@@ -31,10 +25,17 @@ export function renderEmptyOrErrorSearchBlock (reasonMessage) {
   )
 }
 
-export function renderSearchResultsBlock (places: Place[]) {
+export function renderSearchResultsBlock (places: Place[], selectedValue?: string) {
   let resultList: string = ''
-  const favoriteItems: favoriteItem[] = JSON.parse(localStorage.getItem('favoriteItems'))
+  const favoriteItems: FavoriteItem[] = JSON.parse(localStorage.getItem('favoriteItems')) ? JSON.parse(localStorage.getItem('favoriteItems')) : []
   
+  
+  const options = {
+    cheaper: "cheaper",
+    expensive: "expensive",
+    nearer: "nearer"
+  }
+
   places.forEach(place => {
     // let photosHtml = ''
     // place.photos.forEach(photo => {
@@ -43,13 +44,14 @@ export function renderSearchResultsBlock (places: Place[]) {
     resultList += `<li class="result">
     <div class="result-container">
       <div class="result-img-container">
-        <div id=${place.id} class="favorites ${Boolean(favoriteItems.find(item => item.id == place.id)) ? 'active' : ''}"></div>
+        <div id=${place.id} class="favorites ${Boolean(favoriteItems?.find(item => item.id == place.id)) ? 'active' : ''}"></div>
         <img class="result-img" src="${place.photos[0]}" alt="">
       </div>	
       <div class="result-info">
         <div class="result-info--header">
           <p>${place.title}</p>
-          <p class="price">${place.price}&#8381;</p>
+          <p class="price">${place.price}&#8381; /сутки</p>
+          <p class="price">${place.totalPrice}&#8381;</p>
         </div>
         <div class="result-info--map"><i class="map-icon"></i> ${place.remoteness} км от вас</div>
         <div class="result-info--descr">${place.details}</div>
@@ -69,10 +71,11 @@ export function renderSearchResultsBlock (places: Place[]) {
         <p>Результаты поиска</p>
         <div class="search-results-filter">
             <span><i class="icon icon-filter"></i> Сортировать:</span>
-            <select>
-                <option selected="">Сначала дешёвые</option>
-                <option selected="">Сначала дорогие</option>
-                <option>Сначала ближе</option>
+            <select id="select">
+            <option value='' ${selectedValue ? '' : 'selected'}></option>
+            <option value='${options.expensive}' ${selectedValue == options.expensive ? 'selected' : ''}>Сначала дорогие</option>
+            <option value='${options.nearer}' ${selectedValue == options.nearer ? 'selected' : ''}>Сначала ближе</option>
+            <option value='${options.cheaper}' ${selectedValue == options.cheaper ? 'selected' : ''}>Сначала дешёвые</option>
             </select>
         </div>
     </div>
@@ -82,25 +85,16 @@ export function renderSearchResultsBlock (places: Place[]) {
     `
   )
 
+  // const select = document.getElementById('select')
+  
+  document.getElementById('select').addEventListener('change', e => {
+      sort(e.target.value, places);    
+  })
+
   const favorites = document.getElementsByClassName("favorites")
   for(let i = 0; i < favorites.length; i++) {
-    favorites[i].addEventListener('click', (e) => {
-      const current = places.find(place => place.id == e.target.id)
-      const isFavorite = Boolean(favoriteItems.find(item => item.id == current.id))
-      
-      if (!isFavorite) {
-        favoriteItems.push({id: current.id, name: current.title, image: current.photos[0]})
-      } else {
-        favoriteItems.splice(favoriteItems.indexOf(favoriteItems.find(item => item.id == e.target.id)), 1)
-      }
-      
-      localStorage.removeItem('favoriteItems')
-      localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems))
-      renderSearchResultsBlock(places)
-      const user = getUserData()
-      const quantFavorites = getFavoritesAmount()
-      renderUserBlock(user.userName, user.avatarUrl, quantFavorites)
-      
+    favorites[i].addEventListener('click', e => {
+      toggleFavoriteItem(e, places, favoriteItems)
     })
   }
 }

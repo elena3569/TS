@@ -68,16 +68,6 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
             <input id="max-price" type="text" value="" name="price" class="max-price" />
           </div>
           <div>
-            <input type="checkbox" id="db" name="db"
-                  checked>
-            <label for="db">db-1</label>
-          </div>
-
-          <div>
-            <input type="checkbox" id="sdk" name="sdk">
-            <label for="sdk">SDK</label>
-          </div>
-          <div>
             <div><button id="search-button">Найти</button></div>
           </div>
         </div>
@@ -94,7 +84,7 @@ export function renderSearchFormBlock(startDate?: string, endDate?: string) {
       event.preventDefault()
       
       const searchData: SearchFormData = collectSearchFormData()
-      if (searchData.city && searchData.startDate && searchData.endDate && searchData.maxPrice) {
+      if (searchData.city && searchData.checkInDate && searchData.checkOutDate && searchData.priceLimit) {
         const result = await search(searchData)
         
         if (result.length > 0) {
