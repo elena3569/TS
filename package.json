@@ -4,9 +4,9 @@
   "scripts": {
     "build": "rimraf public/scripts && tsc -p tsconfig-dev.json",
     "build:prod": "rimraf public/scripts && tsc",
-    "start": "http-server -p 3000",
+    "start": "http-server -p 3007",
     "lint": "eslint src --ext .js --ext .ts",
-  "lint-fix": "eslint src --ext .js --ext .ts --fix"
+    "lint-fix": "eslint src --ext .js --ext .ts --fix"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,8 @@
     "http-server": "^14.0.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "json-server": "^0.17.0"
   }
 }
