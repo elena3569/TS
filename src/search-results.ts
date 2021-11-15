@@ -13,7 +13,7 @@ export function renderSearchStubBlock () {
   )
 }
 
-export function renderEmptyOrErrorSearchBlock (reasonMessage) {
+export function renderEmptyOrErrorSearchBlock (reasonMessage: string) {
   renderBlock(
     'search-results-block',
     `
@@ -27,7 +27,15 @@ export function renderEmptyOrErrorSearchBlock (reasonMessage) {
 
 export function renderSearchResultsBlock (places: Place[], selectedValue?: string) {
   let resultList: string = ''
-  const favoriteItems: FavoriteItem[] = JSON.parse(localStorage.getItem('favoriteItems')) ? JSON.parse(localStorage.getItem('favoriteItems')) : []
+  const localStor: unknown = localStorage.getItem('favoriteItems')
+  const favoriteItems: FavoriteItem[] = []
+  if (typeof localStor === 'string') {
+    let items: FavoriteItem[] = JSON.parse(localStor)
+    items.forEach(item => {
+      favoriteItems.push(item)
+    });
+  }
+
   
   
   const options = {
@@ -85,11 +93,15 @@ export function renderSearchResultsBlock (places: Place[], selectedValue?: strin
     `
   )
 
-  // const select = document.getElementById('select')
-  
-  document.getElementById('select').addEventListener('change', e => {
-      sort(e.target.value, places);    
-  })
+  const selectEl = document.getElementById('select')
+  if (selectEl instanceof HTMLElement) {
+    selectEl.addEventListener('change', e => {
+      const target = e.target
+      if (target instanceof EventTarget && target.hasOwnProperty('value')) {
+        sort(target.value, places); 
+      }
+    })
+  }
 
   const favorites = document.getElementsByClassName("favorites")
   for(let i = 0; i < favorites.length; i++) {

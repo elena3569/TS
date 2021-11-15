@@ -71,22 +71,26 @@ export function sort(value: string, places: Place[]) {
 }
 
 export function toggleFavoriteItem(e: Event, places: Place[], favoriteItems: FavoriteItem[]) {
-  const current = places.find(place => place.id == e.target.id)
   
-  if (!favoriteItems) {
-    favoriteItems.push({id: current.id, name: current.title, image: current.photos[0]})
-    return
-  }
-
+  const target = e.target
+      if (target instanceof EventTarget && target.hasOwnProperty('id')) {
+  
+    const current = places.find(place => place.id == target.id)
+    
+    if (typeof current === 'object' && 'id' in current && 'title' in current && 'photos' in current) {
+      favoriteItems.push({id: current.id, name: current.title, image: current.photos[0]})
       const isFavorite = Boolean(favoriteItems.find(item => item.id == current.id))
-      
       if (!isFavorite) {
         // favoriteItems.push({id: current.id, name: current.title, image: current.photos[0]})
         localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems.concat({id: current.id, name: current.title, image: current.photos[0]})))
       } else {
         // favoriteItems = favoriteItems.filter(item => item.id != e.target.id)
-        localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems.filter(item => item.id != e.target.id)))
+        localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems.filter(item => item.id != target.id)))
       }
+    }
+    
+  }
+      
       
       renderSearchResultsBlock(places)
       const user = getUserData()
@@ -118,22 +122,42 @@ export async function search(searchData: SearchFormData): Promise<Place[]> {
 }
 
 export function collectSearchFormData() {
-  const checkInDate = (document.getElementById('check-in-date').value).split('-')
-  const checkOutDate = (document.getElementById('check-out-date').value).split('-')
-  
   const searchData: SearchFormData = {
-    city: document.getElementById('city').value,
-    checkInDate: new Date(+checkInDate[0], +checkInDate[1], +checkInDate[2]),
-    checkOutDate: new Date(+checkOutDate[0], +checkOutDate[1], +checkOutDate[2]),
-    priceLimit: +document.getElementById('max-price').value,
+    city: '',
+    checkInDate: new Date(),
+    checkOutDate: new Date(),
+    priceLimit: 0,
   }
+  const checkInDateEl = document.getElementById('check-in-date')
+  const checkOutDateEl = document.getElementById('check-out-date')
+  const cityEl = document.getElementById('city')
+  const priceEl = document.getElementById('price')
+  
+  if (checkInDateEl instanceof HTMLElement && 'value' in checkInDateEl){
+    const checkInDate = (checkInDateEl.value).split('-')
+    searchData.checkInDate = new Date(+checkInDate[0], +checkInDate[1], +checkInDate[2])
+  }
+  if (checkOutDateEl instanceof HTMLElement && 'value' in checkOutDateEl){
+    const checkOutDate = (checkOutDateEl.value).split('-')
+    searchData.checkOutDate = new Date(+checkOutDate[0], +checkOutDate[1], +checkOutDate[2])
+  }
+  if (cityEl instanceof HTMLElement && 'value' in cityEl){
+    searchData.city = cityEl.value
+  }
+  if (priceEl instanceof HTMLElement && 'value' in priceEl){
+    searchData.priceLimit = +priceEl.value
+  }
+
+  
   return searchData
 }
 
 
-export function renderBlock(elementId, html) {
+export function renderBlock(elementId: string, html: string) {
   const element = document.getElementById(elementId)
-  element.innerHTML = html
+  if (element instanceof HTMLElement) {
+    element.innerHTML = html
+  }
 }
 
 export function renderToast(message: Notice, action?: Action) {
@@ -159,25 +183,38 @@ export function renderToast(message: Notice, action?: Action) {
       if (action != null && action.handler != null) {
         action.handler()
       }
-      renderToast(null)
+      renderToast({text: '', type: ''})
     }
   }
 }
 
 
 // Для обеих функций применить подход с unknown, чтобы валидировать содержимое localStorage. ????
-export function getUserData() {
-  const user: User = JSON.parse(localStorage.getItem('user'))
-  return user
+export function getUserData(): User {
+  const localStor = localStorage.getItem('user')
+  if (typeof localStor === 'string'){
+    const user: unknown = JSON.parse(localStor)
+    if (user instanceof Object) {
+      if ('userName' in user && 'avatarUrl' in user) {
 
+        return user
+      }
+    }
+  }
+  return {userName: '', avatarUrl: ''}
 }
 export function getFavoritesAmount(): number {
   
-  const favoritesAmount = JSON.parse(localStorage.getItem('favoriteItems'))
+  const favoritesAmount = localStorage.getItem('favoriteItems')
 
-  if (favoritesAmount) {
-    return Object.keys(favoritesAmount).length
+  const localStor = localStorage.getItem('favoriteItems')
+  if (typeof localStor === 'string'){
+    const favoritesAmount: unknown = JSON.parse(localStor)
+    if (favoritesAmount instanceof Array) {
+      return Object.keys(favoritesAmount).length
+    }
   }
+
   return 0
   
 }
